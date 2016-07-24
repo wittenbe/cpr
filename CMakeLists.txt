@@ -74,3 +74,23 @@ add_subdirectory(cpr)
 if(BUILD_CPR_TESTS) 
     add_subdirectory(test)
 endif()
+
+# The interesting stuff goes here
+# ===============================
+
+# Add all targets to the build-tree export set
+export(TARGETS cpr FILE "${PROJECT_BINARY_DIR}/cpr-targets.cmake")
+
+# Export the package for use from the build-tree
+# (this registers the build-tree with a global CMake-registry)
+export(PACKAGE cpr)
+
+# Create the cpr-config.cmake and cpr-config-version files
+file(RELATIVE_PATH REL_INCLUDE_DIR ${CMAKE_INSTALL_PREFIX}/CMake ${CMAKE_INSTALL_PREFIX}/include)
+# ... for the build tree
+set(CONF_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}")
+configure_file(cpr-config.cmake.in "${PROJECT_BINARY_DIR}/cpr-config.cmake" @ONLY)
+# ... for the install tree
+set(CONF_INCLUDE_DIRS "\${CPR_CMAKE_DIR}/${REL_INCLUDE_DIR}")
+configure_file( cpr-config.cmake.in
+                "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/cpr-config.cmake" @ONLY)
